@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env 
 
 # Pull down working directory
-WORKDIR /App
+WORKDIR /app
 
 #Copy the csproj file to know the dependencies to build with
 COPY *.csproj ./
@@ -12,8 +12,6 @@ RUN dotnet restore
 
 COPY . ./
 
-RUN dotnet restore
-
 RUN dotnet publish -c Release -o out
 
 
@@ -21,10 +19,10 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
 # Create working directory
-WORKDIR /App
+WORKDIR /app
 
 # Copy content on what is being build
-COPY --from=build-env /App/out .
+COPY --from=build-env /app/out .
 
 # Set entry point
 ENTRYPOINT ["dotnet", "PlatformService.dll"]
