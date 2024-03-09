@@ -24,6 +24,7 @@ namespace PlatformService.Data
                     );
 
                 context.SaveChanges();
+                Console.WriteLine("Database seeded successfully");
             }
             else
             {
