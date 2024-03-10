@@ -15,3 +15,4 @@ spec:
       containers:
         - name: platformservice
           image: fortunateomonuwa/platformservice:latest
+          imagePullPolicy: Never
