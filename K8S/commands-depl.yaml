@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: platforms-depl
+  name: commands-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: platformservice
+      app: commandservice
   template:
     metadata:
       labels:
-        app: platformservice
+        app: commandservice
     spec:
       containers:
-        - name: platformservice
-          image: fortunateomonuwa/platformservice:latest
+        - name: commandservice
+          image: fortunateomonuwa/commandservice:latest
           imagePullPolicy: Never
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: platformservice-clusterip
+  name: commandservice-clusterip
 spec:
   selector:
-    app: platformservice
+    app: commandservice
   type: ClusterIP
   ports:
-    - name: platformservice
+    - name: commandservice
       protocol: TCP
       port: 8080
       targetPort: 8080
