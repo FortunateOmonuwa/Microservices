@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlatformService.Data;
 using PlatformService.DTOs;
 using PlatformService.Models;
+using PlatformService.SyncDataServices.Http;
 
 namespace PlatformService.Controllers
 {
@@ -12,11 +13,13 @@ namespace PlatformService.Controllers
     public class PlatformController : ControllerBase
     {
         private readonly IPlatformRepo repo;
+        private readonly ICommandDataClient commandDataClient;
         private readonly IMapper mapper;
-        public PlatformController(IPlatformRepo repo, IMapper mapper)
+        public PlatformController(IPlatformRepo repo, IMapper mapper, ICommandDataClient commandDataClient)
         {
             this.mapper = mapper;
             this.repo = repo;
+            this.commandDataClient = commandDataClient;
         }
         [HttpGet]
 
@@ -47,12 +50,20 @@ namespace PlatformService.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreatePlatform([FromBody] PlatformCreateDTO platformDTO)
+        public async Task<IActionResult> CreatePlatform([FromBody] PlatformCreateDTO platformDTO)
         {
             var platformModel = mapper.Map<Platform>(platformDTO);
 
             repo.CreatePlatform(platformModel);
             var platfrom = mapper.Map<PlatformReadDTO>(platformModel);
+            try
+            {
+                await commandDataClient.SendPlatformToCommand(platfrom);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: Couldl not send platform to commmand client\n\n { ex.Message} ");
+            }
 
             return CreatedAtRoute(nameof(GetPlatformbyId), new { platfrom.Id }, platfrom);
 
